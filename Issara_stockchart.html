@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+		<title>TECH STOCKS</title>
+		<script src="js/Chart.js"></script>
+        <link rel="stylesheet" href="tchart.css">
+		<meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+        <script type="text/javascript">
+            var readText;
+            function readTextFile(fileName){
+                var inFile = new XMLHttpRequest();
+                inFile.open("GET", fileName, false);  // false means synchronous
+                inFile.send();
+                readText = inFile.responseText;
+                //document.write(readText);
+                var genDate=[];
+                var genVolume=[];
+                var genPrice=[];
+                var mainArray = readText.split(/[\s,]+/);
+                var l = mainArray.length;
+                var i=0;
+                var j=l-1;
+                while(i<l){
+                    if(i%3 == 0){
+                            genPrice.push(mainArray[j]);
+                    }
+                    else if(i%3==1){
+                            genVolume.push(parseInt(mainArray[j])/1000000);
+                    }
+                    else {//i%3 == 2
+                            genDate.push(mainArray[j]);
+                    }
+                    i++;
+                    j--;
+                }
+                
+                return [genDate, genVolume, genPrice];
+            }           
+        </script>
+        <script type="text/javascript">
+            var orclIO = readTextFile("orcl.csv");
+            var orclDate = orclIO[0];
+            var orclVolume = orclIO[1];
+            var orclPrice = orclIO[2];
+            var qcomIO = readTextFile("qcom.csv");
+            var qcomDate = qcomIO[0];
+            var qcomVolume = qcomIO[1];
+            var qcomPrice = qcomIO[2];
+            var crmIO = readTextFile("crm.csv");
+            var crmDate = crmIO[0];
+            var crmVolume = crmIO[1];
+            var crmPrice = crmIO[2];
+        </script>
+        
+		<script>
+		  var orclGraph, orclBarGraph, qcomGraph, qcomBarGraph, crmGraph, crmBarGraph, nullGraph;                     var  nullBarGraph, initialGraph, initBarGraph;
+        
+            var orclDataset =  {fillColor : "rgba(0,250,0,0.5)",
+                                strokeColor : "rgba(0,250,0,1)",
+					           data : orclPrice};
+            var qcomDataset = {fillColor : "rgba(255,0,0,0.5)",
+					           strokeColor : "rgba(255,0,0,1)",
+					           data : qcomPrice};
+            var crmDataset = {fillColor : "rgba(0,0,255,0.5)",
+					           strokeColor : "rgba(0,0,255,1)",
+                               data : crmPrice}
+            var nullDataset = {data : []};
+            var allDataset = [orclDataset, qcomDataset, crmDataset];
+            var orclqcomDataset = [orclDataset, qcomDataset];
+            var orclcrmDataset = [orclDataset, crmDataset];
+            var qcomcrmDataset = [qcomDataset, crmDataset];          
+            
+        var orclStocks = {labels : orclDate,datasets : [orclDataset]};
+        var qcomStocks = {labels : qcomDate,datasets : [qcomDataset]};
+        var crmStocks = {labels : crmDate,datasets : [crmDataset]};    
+        var nullStocks = {labels : orclDate,datasets : [nullDataset]};        
+        var allStocks = {labels : orclDate, datasets : allDataset};   
+        var orclqcomStocks = {labels : orclDate,datasets :orclqcomDataset};   
+        var orclcrmStocks = {labels : orclDate,datasets : orclcrmDataset};
+        var qcomcrmStocks = {labels : orclDate,datasets : qcomcrmDataset};
+            
+            var orclVData =  {fillColor : "rgba(0,250,0,0.5)",
+                                strokeColor : "rgba(0,250,0,1)",
+					           data : orclVolume};
+            var qcomVData = {fillColor : "rgba(255,0,0,0.5)",
+					           strokeColor : "rgba(255,0,0,1)",
+					           data : qcomVolume};
+            var crmVData = {fillColor : "rgba(0,0,255,0.5)",
+					           strokeColor : "rgba(0,0,255,1)",
+                               data : crmVolume}
+            var vnullDataset = {data : []};
+            var vallDataset = [orclVData, qcomVData, crmVData];
+            var vorclqcomDataset = [orclVData, qcomVData];
+            var vorclcrmDataset = [orclVData, crmVData];
+            var vqcomcrmDataset = [qcomVData, crmVData];          
+            
+        var vorclStocks = {labels : orclDate,datasets : [orclVData]};
+        var vqcomStocks = {labels : qcomDate,datasets : [qcomVData]};
+        var vcrmStocks = {labels : crmDate,datasets : [crmVData]};    
+        var vnullStocks = {labels : orclDate,datasets : [vnullDataset]};        
+        var vallStocks = {labels : orclDate, datasets : vallDataset};   
+        var vorclqcomStocks = {labels : orclDate,datasets :vorclqcomDataset};   
+        var vorclcrmStocks = {labels : orclDate,datasets : vorclcrmDataset};
+        var vqcomcrmStocks = {labels : orclDate,datasets : vqcomcrmDataset};
+        
+        function initialGraph(){
+            initialGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclStocks); 
+        initBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclStocks);
+        }
+        var ORCLt = true;
+        var QCOMt = false;
+        var CRMt = false;
+            
+		  function drawORCL(){
+              if(ORCLt == false){
+                  if(CRMt == false){
+                      if(QCOMt == false){
+             orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclStocks); 
+            orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclStocks);
+                        }
+                        else{ //QCOMt == true
+        orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclqcomStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclqcomStocks);
+                        }
+                  }
+                  else{ //CRMt == true
+                      if(QCOMt == false){
+            orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclcrmStocks);
+                      }
+                      else{ //QCOMt == true
+         orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vallStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(allStocks);
+                      }
+                }
+                ORCLt = true;
+              }
+              else{ //ORCLT == true
+                  if(CRMt == false){
+                      if(QCOMt == false){
+             orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vnullStocks); 
+            orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(nullStocks);
+                        }
+                        else{ //QCOMt == true
+        orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vqcomStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(qcomStocks);
+                        }
+                  }
+                  else{ //CRMt == true
+                      if(QCOMt == false){
+            orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(crmStocks);
+                      }
+                      else{ //QCOMt == true
+         orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vqcomcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(qcomcrmStocks);
+                      }
+                }
+                ORCLt = false;
+              }  
+          }
+          
+    
+            function drawQCOM(){
+                if(QCOMt == false){
+                  if(CRMt == false){
+                      if(ORCLt == false){
+              orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vqcomStocks); 
+            orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(qcomStocks);
+                        }
+                        else{ //ORCLt == true
+        orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclqcomStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclqcomStocks);
+                        }
+                  }
+                  else{ //CRMt == true
+                      if(ORCLt == false){
+            orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vqcomcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(qcomcrmStocks);
+                      }
+                      else{ //ORCLt == true
+         orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vallStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(allStocks);
+                      }
+                }
+                QCOMt = true;
+              }
+              else{ //QCOMt == true
+                  if(CRMt == false){
+                      if(ORCLt == false){
+               orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vnullStocks); 
+            orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(nullStocks);
+                        }
+                        else{ //ORCLt == true
+        orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclStocks);
+                        }
+                  }
+                  else{ //CRMt == true
+                      if(ORCLt == false){
+            orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(crmStocks);
+                      }
+                      else{ //ORCLt == true
+         orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclcrmStocks);
+                      }
+                }
+                QCOMt = false;
+              }  
+          }
+            
+            
+		  function drawCRM(){
+              if(CRMt == false){
+                  if(ORCLt == false){
+                      if(QCOMt == false){
+                orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vcrmStocks); 
+            orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(crmStocks);
+                        }
+                        else{ //QCOMt == true
+        orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vqcomcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(qcomcrmStocks);
+                        }
+                  }
+                  else{ //ORCLt == true
+                      if(QCOMt == false){
+//            orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclcrmStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclcrmStocks);
+                      }
+                      else{ //QCOMt == true
+         orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vallStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(allStocks);
+                      }
+                }
+                CRMt = true;
+              }
+              else{ //CRMt == true
+                  if(ORCLt == false){
+                      if(QCOMt == false){
+             orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vnullStocks); 
+            orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(nullStocks);
+                        }
+                        else{ //QCOMt == true
+        orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vqcomStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(qcomStocks);
+                        }
+                  }
+                  else{ //ORCLt == true
+                      if(QCOMt == false){
+            orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclStocks);
+                      }
+                      else{ //QCOMt == true
+         orclGraph = new Chart(document.getElementById("canvas").getContext("2d")).Line(vorclqcomStocks); 
+        orclBarGraph= new Chart(document.getElementById("canvas2").getContext("2d")).Bar(orclqcomStocks);
+                      }
+                }
+                CRMt = false;
+              }  
+          }
+             
+		</script>
+	</head>
+    
+	<body>
+		<h1> TECH STOCKS</h1>
+        
+		<div class="charts">	
+			<canvas id="canvas" height="400" width="800"></canvas>
+            <canvas id="canvas2" height="400" width="800"></canvas>
+		</div>
+        <h2 class="info">
+        Price ($) and Trade Volume (millions)
+        </h2>
+        <p id="demo"></p>
+		<div class="sbuttons">
+            <script>initialGraph()</script>
+            <button type="button" class="orclbutton" onClick="drawORCL()">ORCL</button>
+			<button type="button" class="qcombutton" onClick="drawQCOM()">QCOM</button>
+			<button type="button" class="crmbutton" onClick="drawCRM()">CRM</button>
+		</div>
+	</body>
+</html>
